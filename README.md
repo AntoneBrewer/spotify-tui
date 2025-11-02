@@ -168,7 +168,7 @@ But here they are again:
 1. Click `Create an app`
     - You now can see your `Client ID` and `Client Secret`
 1. Now click `Edit Settings`
-1. Add `http://localhost:8888/callback` to the Redirect URIs
+1. Add `http://127.0.0.1:8888/callback` to the Redirect URIs
 1. Scroll down and click `Save`
 1. You are now ready to authenticate with Spotify!
 1. Go back to the terminal
