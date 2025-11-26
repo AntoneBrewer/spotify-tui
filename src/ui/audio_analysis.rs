@@ -13,8 +13,6 @@ const PITCHES: [&str; 12] = [
 ];
 
 pub fn draw(f: &mut Frame<'_>, app: &App)
-where
-  B: Backend,
 {
   let margin = util::get_main_layout_margin(app);
 

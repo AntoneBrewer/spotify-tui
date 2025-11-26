@@ -404,7 +404,7 @@ impl<'a> Network<'a> {
     if let Ok(playlist_id_obj) = PlaylistId::from_id(&playlist_id) {
       if let Ok(playlist_tracks) = self
         .spotify
-        .playlist_items(
+        .playlist_items_manual(
           playlist_id_obj,
           None,
           None,
@@ -466,7 +466,7 @@ impl<'a> Network<'a> {
     if let Ok(playlist_id_obj) = PlaylistId::from_id(&playlist_id) {
       if let Ok(made_for_you_tracks) = self
         .spotify
-        .playlist_items(
+        .playlist_items_manual(
           playlist_id_obj,
           None,
           None,
@@ -491,7 +491,7 @@ impl<'a> Network<'a> {
   async fn get_current_user_saved_shows(&mut self, offset: Option<u32>) {
     match self
       .spotify
-      .get_saved_show_manual(None::<Market>, Some(self.large_search_limit), offset)
+      .get_saved_show_manual(Some(self.large_search_limit), offset)
       .await
     {
       Ok(saved_shows) => {
@@ -763,7 +763,7 @@ impl<'a> Network<'a> {
       }
     });
 
-    let offset_obj = offset.map(|o| Offset::Position(o));
+    let offset_obj = offset.map(|o| Offset::Position(chrono::Duration::try_milliseconds((o * 1000) as i64).unwrap_or_default()));
 
     let device_id = self.client_config.device_id.as_deref();
 

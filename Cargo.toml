@@ -31,6 +31,7 @@ tokio = { version = "1", features = ["full"] }
 rand = "0.8"
 anyhow = "1.0"
 reqwest = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
+webbrowser = "1.0"
 
 [[bin]]
 bench = false

@@ -74,8 +74,6 @@ pub struct TableItem {
 }
 
 pub fn draw_help_menu(f: &mut Frame<'_>, app: &App)
-where
-  B: Backend,
 {
   let chunks = Layout::default()
     .direction(Direction::Vertical)
@@ -121,8 +119,6 @@ where
 }
 
 pub fn draw_input_and_help_box(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   // Check for the width and change the contraints accordingly
   let chunks = Layout::default()
@@ -177,8 +173,6 @@ where
 }
 
 pub fn draw_main_layout(f: &mut Frame<'_>, app: &App)
-where
-  B: Backend,
 {
   let margin = util::get_main_layout_margin(app);
   // Responsive layout: new one kicks in at width 150 or higher
@@ -223,8 +217,6 @@ where
 }
 
 pub fn draw_routes(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let chunks = Layout::default()
     .direction(Direction::Horizontal)
@@ -281,8 +273,6 @@ where
 }
 
 pub fn draw_library_block(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let current_route = app.get_current_route();
   let highlight_state = (
@@ -301,8 +291,6 @@ where
 }
 
 pub fn draw_playlist_block(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let playlist_items = match &app.playlists {
     Some(p) => p.items.iter().map(|item| item.name.to_owned()).collect(),
@@ -328,8 +316,6 @@ where
 }
 
 pub fn draw_user_block(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   // Check for width to make a responsive layout
   if app.size.width >= SMALL_TERMINAL_WIDTH && !app.user_config.behavior.enforce_wide_search_bar {
@@ -362,8 +348,6 @@ where
 }
 
 pub fn draw_search_results(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let chunks = Layout::default()
     .direction(Direction::Vertical)
@@ -551,8 +535,6 @@ struct AlbumUi {
 }
 
 pub fn draw_artist_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::Artist,
@@ -589,8 +571,6 @@ where
 }
 
 pub fn draw_podcast_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::Podcast,
@@ -641,8 +621,6 @@ where
 }
 
 pub fn draw_album_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::Album,
@@ -753,8 +731,6 @@ where
 }
 
 pub fn draw_recommendations_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::Song,
@@ -832,8 +808,6 @@ where
 }
 
 pub fn draw_song_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::Song,
@@ -900,8 +874,6 @@ where
 }
 
 pub fn draw_basic_view(f: &mut Frame<'_>, app: &App)
-where
-  B: Backend,
 {
   // If space is negative, do nothing because the widget would not fit
   if let Some(s) = app.size.height.checked_sub(BASIC_VIEW_HEIGHT) {
@@ -923,8 +895,6 @@ where
 }
 
 pub fn draw_playbar(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let chunks = Layout::default()
     .direction(Direction::Vertical)
@@ -1058,8 +1028,6 @@ where
 }
 
 pub fn draw_error_screen(f: &mut Frame<'_>, app: &App)
-where
-  B: Backend,
 {
   let chunks = Layout::default()
     .direction(Direction::Vertical)
@@ -1119,8 +1087,6 @@ where
 }
 
 fn draw_home(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let chunks = Layout::default()
     .direction(Direction::Vertical)
@@ -1180,8 +1146,6 @@ where
 }
 
 fn draw_artist_albums(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let chunks = Layout::default()
     .direction(Direction::Horizontal)
@@ -1284,8 +1248,6 @@ where
 }
 
 pub fn draw_device_list(f: &mut Frame<'_>, app: &App)
-where
-  B: Backend,
 {
   let chunks = Layout::default()
     .direction(Direction::Vertical)
@@ -1352,8 +1314,6 @@ where
 }
 
 pub fn draw_album_list(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::AlbumList,
@@ -1416,8 +1376,6 @@ where
 }
 
 pub fn draw_show_episodes(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::PodcastEpisodes,
@@ -1527,8 +1485,6 @@ where
 }
 
 pub fn draw_made_for_you(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::MadeForYou,
@@ -1568,8 +1524,6 @@ where
 }
 
 pub fn draw_recently_played_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
-where
-  B: Backend,
 {
   let header = TableHeader {
     id: TableId::RecentlyPlayed,
@@ -1634,7 +1588,7 @@ where
   };
 }
 
-fn draw_selectable_list<B, S>(
+fn draw_selectable_list<S>(
   f: &mut Frame<'_>,
   app: &App,
   layout_chunk: Rect,
@@ -1642,10 +1596,7 @@ fn draw_selectable_list<B, S>(
   items: &[S],
   highlight_state: (bool, bool),
   selected_index: Option<usize>,
-) where
-  B: Backend,
-  S: std::convert::AsRef<str>,
-{
+) where S: std::convert::AsRef<str> {
   let mut state = ListState::default();
   state.select(selected_index);
 
@@ -1673,8 +1624,6 @@ fn draw_selectable_list<B, S>(
 }
 
 fn draw_dialog(f: &mut Frame<'_>, app: &App)
-where
-  B: Backend,
 {
   if let ActiveBlock::Dialog(_) = app.get_current_route().active_block {
     if let Some(playlist) = app.dialog.as_ref() {
@@ -1757,9 +1706,7 @@ fn draw_table(
   items: &[TableItem], // The nested vector must have the same length as the `header_columns`
   selected_index: usize,
   highlight_state: (bool, bool),
-) where
-  B: Backend,
-{
+) {
   let selected_style =
     get_color(highlight_state, app.user_config.theme).add_modifier(Modifier::BOLD);
 

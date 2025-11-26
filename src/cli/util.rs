@@ -22,16 +22,16 @@ pub enum Type {
 }
 
 impl Type {
-  pub fn play_from_matches(m: &ArgMatches<'_>) -> Self {
-    if m.is_present("playlist") {
+  pub fn play_from_matches(m: &ArgMatches) -> Self {
+    if m.get_flag("playlist") {
       Self::Playlist
-    } else if m.is_present("track") {
+    } else if m.get_flag("track") {
       Self::Track
-    } else if m.is_present("artist") {
+    } else if m.get_flag("artist") {
       Self::Artist
-    } else if m.is_present("album") {
+    } else if m.get_flag("album") {
       Self::Album
-    } else if m.is_present("show") {
+    } else if m.get_flag("show") {
       Self::Show
     }
     // Enforced by clap
@@ -40,16 +40,16 @@ impl Type {
     }
   }
 
-  pub fn search_from_matches(m: &ArgMatches<'_>) -> Self {
-    if m.is_present("playlists") {
+  pub fn search_from_matches(m: &ArgMatches) -> Self {
+    if m.get_flag("playlists") {
       Self::Playlist
-    } else if m.is_present("tracks") {
+    } else if m.get_flag("tracks") {
       Self::Track
-    } else if m.is_present("artists") {
+    } else if m.get_flag("artists") {
       Self::Artist
-    } else if m.is_present("albums") {
+    } else if m.get_flag("albums") {
       Self::Album
-    } else if m.is_present("shows") {
+    } else if m.get_flag("shows") {
       Self::Show
     }
     // Enforced by clap
@@ -58,12 +58,12 @@ impl Type {
     }
   }
 
-  pub fn list_from_matches(m: &ArgMatches<'_>) -> Self {
-    if m.is_present("playlists") {
+  pub fn list_from_matches(m: &ArgMatches) -> Self {
+    if m.get_flag("playlists") {
       Self::Playlist
-    } else if m.is_present("devices") {
+    } else if m.get_flag("devices") {
       Self::Device
-    } else if m.is_present("liked") {
+    } else if m.get_flag("liked") {
       Self::Liked
     }
     // Enforced by clap
@@ -87,21 +87,21 @@ pub enum Flag {
 }
 
 impl Flag {
-  pub fn from_matches(m: &ArgMatches<'_>) -> Vec<Self> {
+  pub fn from_matches(m: &ArgMatches) -> Vec<Self> {
     // Multiple flags are possible
     let mut flags = Vec::new();
 
     // Only one of these two
-    if m.is_present("like") {
+    if m.get_flag("like") {
       flags.push(Self::Like(true));
-    } else if m.is_present("dislike") {
+    } else if m.get_flag("dislike") {
       flags.push(Self::Like(false));
     }
 
-    if m.is_present("shuffle") {
+    if m.get_flag("shuffle") {
       flags.push(Self::Shuffle);
     }
-    if m.is_present("repeat") {
+    if m.get_flag("repeat") {
       flags.push(Self::Repeat);
     }
     flags
@@ -115,19 +115,21 @@ pub enum JumpDirection {
 }
 
 impl JumpDirection {
-  pub fn from_matches(m: &ArgMatches<'_>) -> (Self, u64) {
-    if m.is_present("next") {
-      (Self::Next, m.occurrences_of("next"))
-    } else if m.is_present("previous") {
-      (Self::Previous, m.occurrences_of("previous"))
-    // Enforced by clap
+  pub fn from_matches(m: &ArgMatches) -> (Self, u64) {
+    let next_count = m.get_count("next") as u64;
+    let prev_count = m.get_count("previous") as u64;
+    
+    if next_count > 0 {
+      (Self::Next, next_count)
+    } else if prev_count > 0 {
+      (Self::Previous, prev_count)
     } else {
-      unreachable!()
+      (Self::Next, 0)
     }
   }
 }
 
-// For fomatting (-f / --format flag)
+// For formatting (-f / --format flag)
 
 // Types to create a Format enum from
 // Boxing was proposed by cargo clippy
@@ -154,7 +156,7 @@ pub enum Format {
   Volume(u32),
   // Current position, duration
   Position((u32, u32)),
-  // This is a bit long, should it be splitted up?
+  // This is a bit long, should it be split up?
   Flags((RepeatState, bool, bool)),
   Playing(bool),
 }
@@ -173,32 +175,35 @@ impl Format {
       FormatType::Album(a) => {
         let joined_artists = join_artists(a.artists.clone());
         let mut vec = vec![Self::Album(a.name), Self::Artist(joined_artists)];
-        if let Some(uri) = a.uri {
-          vec.push(Self::Uri(uri));
+        if let Some(ref album_id) = a.id {
+          vec.push(Self::Uri(album_id.uri()));
         }
         vec
       }
-      FormatType::Artist(a) => vec![Self::Artist(a.name), Self::Uri(a.uri)],
-      FormatType::Playlist(p) => vec![Self::Playlist(p.name), Self::Uri(p.uri)],
+      FormatType::Artist(a) => vec![Self::Artist(a.name), Self::Uri(a.id.uri())],
+      FormatType::Playlist(p) => vec![Self::Playlist(p.name), Self::Uri(p.id.uri())],
       FormatType::Track(t) => {
         let joined_artists = join_artists(t.artists.clone());
-        vec![
+        let mut vec = vec![
           Self::Album(t.album.name),
           Self::Artist(joined_artists),
           Self::Track(t.name),
-          Self::Uri(t.uri),
-        ]
+        ];
+        if let Some(ref track_id) = t.id {
+          vec.push(Self::Uri(track_id.uri()));
+        }
+        vec
       }
       FormatType::Show(r) => vec![
         Self::Artist(r.publisher),
         Self::Show(r.name),
-        Self::Uri(r.uri),
+        Self::Uri(r.id.uri()),
       ],
       FormatType::Episode(e) => vec![
         Self::Show(e.show.name),
         Self::Artist(e.show.publisher),
         Self::Track(e.name),
-        Self::Uri(e.uri),
+        Self::Uri(e.id.uri()),
       ],
     }
   }
