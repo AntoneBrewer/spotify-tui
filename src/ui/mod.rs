@@ -10,13 +10,13 @@ use super::{
 };
 use help::get_help_docs;
 use rspotify::model::show::ResumePoint;
-use rspotify::model::PlayingItem;
-use rspotify::senum::RepeatState;
-use tui::{
+use rspotify::model::PlayableItem;
+use rspotify::model::RepeatState;
+use ratatui::{
   backend::Backend,
   layout::{Alignment, Constraint, Direction, Layout, Rect},
   style::{Modifier, Style},
-  text::{Span, Spans, Text},
+  text::{Span, Line, Text},
   widgets::{Block, Borders, Clear, Gauge, List, ListItem, ListState, Paragraph, Row, Table, Wrap},
   Frame,
 };
@@ -73,7 +73,7 @@ pub struct TableItem {
   format: Vec<String>,
 }
 
-pub fn draw_help_menu<B>(f: &mut Frame<B>, app: &App)
+pub fn draw_help_menu(f: &mut Frame<'_>, app: &App)
 where
   B: Backend,
 {
@@ -120,7 +120,7 @@ where
   f.render_widget(help_menu, chunks[0]);
 }
 
-pub fn draw_input_and_help_box<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_input_and_help_box(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -176,7 +176,7 @@ where
   f.render_widget(help, chunks[1]);
 }
 
-pub fn draw_main_layout<B>(f: &mut Frame<B>, app: &App)
+pub fn draw_main_layout(f: &mut Frame<'_>, app: &App)
 where
   B: Backend,
 {
@@ -222,7 +222,7 @@ where
   draw_dialog(f, app);
 }
 
-pub fn draw_routes<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_routes(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -280,7 +280,7 @@ where
   };
 }
 
-pub fn draw_library_block<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_library_block(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -300,7 +300,7 @@ where
   );
 }
 
-pub fn draw_playlist_block<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_playlist_block(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -327,7 +327,7 @@ where
   );
 }
 
-pub fn draw_user_block<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_user_block(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -361,7 +361,7 @@ where
   }
 }
 
-pub fn draw_search_results<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_search_results(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -388,8 +388,8 @@ where
       .clone()
       .and_then(|context| {
         context.item.and_then(|item| match item {
-          PlayingItem::Track(track) => track.id,
-          PlayingItem::Episode(episode) => Some(episode.id),
+          PlayableItem::Track(track) => track.id,
+          PlayableItem::Episode(episode) => Some(episode.id),
         })
       })
       .unwrap_or_else(|| "".to_string());
@@ -550,7 +550,7 @@ struct AlbumUi {
   title: String,
 }
 
-pub fn draw_artist_table<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_artist_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -588,7 +588,7 @@ where
   )
 }
 
-pub fn draw_podcast_table<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_podcast_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -640,7 +640,7 @@ where
   };
 }
 
-pub fn draw_album_table<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_album_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -752,7 +752,7 @@ where
   };
 }
 
-pub fn draw_recommendations_table<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_recommendations_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -831,7 +831,7 @@ where
   )
 }
 
-pub fn draw_song_table<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_song_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -899,7 +899,7 @@ where
   )
 }
 
-pub fn draw_basic_view<B>(f: &mut Frame<B>, app: &App)
+pub fn draw_basic_view(f: &mut Frame<'_>, app: &App)
 where
   B: Backend,
 {
@@ -922,7 +922,7 @@ where
   }
 }
 
-pub fn draw_playbar<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_playbar(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -987,12 +987,12 @@ where
       f.render_widget(title_block, layout_chunk);
 
       let (item_id, name, duration_ms) = match track_item {
-        PlayingItem::Track(track) => (
+        PlayableItem::Track(track) => (
           track.id.to_owned().unwrap_or_else(|| "".to_string()),
           track.name.to_owned(),
           track.duration_ms,
         ),
-        PlayingItem::Episode(episode) => (
+        PlayableItem::Episode(episode) => (
           episode.id.to_owned(),
           episode.name.to_owned(),
           episode.duration_ms,
@@ -1006,8 +1006,8 @@ where
       };
 
       let play_bar_text = match track_item {
-        PlayingItem::Track(track) => create_artist_string(&track.artists),
-        PlayingItem::Episode(episode) => format!("{} - {}", episode.name, episode.show.name),
+        PlayableItem::Track(track) => create_artist_string(&track.artists),
+        PlayableItem::Episode(episode) => format!("{} - {}", episode.name, episode.show.name),
       };
 
       let lines = Text::from(Span::styled(
@@ -1057,7 +1057,7 @@ where
   }
 }
 
-pub fn draw_error_screen<B>(f: &mut Frame<B>, app: &App)
+pub fn draw_error_screen(f: &mut Frame<'_>, app: &App)
 where
   B: Backend,
 {
@@ -1068,34 +1068,34 @@ where
     .split(f.size());
 
   let playing_text = vec![
-    Spans::from(vec![
+    Line::from(vec![
       Span::raw("Api response: "),
       Span::styled(
         &app.api_error,
         Style::default().fg(app.user_config.theme.error_text),
       ),
     ]),
-    Spans::from(Span::styled(
+    Line::from(Span::styled(
       "If you are trying to play a track, please check that",
       Style::default().fg(app.user_config.theme.text),
     )),
-    Spans::from(Span::styled(
+    Line::from(Span::styled(
       " 1. You have a Spotify Premium Account",
       Style::default().fg(app.user_config.theme.text),
     )),
-    Spans::from(Span::styled(
+    Line::from(Span::styled(
       " 2. Your playback device is active and selected - press `d` to go to device selection menu",
       Style::default().fg(app.user_config.theme.text),
     )),
-    Spans::from(Span::styled(
+    Line::from(Span::styled(
       " 3. If you're using spotifyd as a playback device, your device name must not contain spaces",
       Style::default().fg(app.user_config.theme.text),
     )),
-    Spans::from(Span::styled("Hint: a playback device must be either an official spotify client or a light weight alternative such as spotifyd",
+    Line::from(Span::styled("Hint: a playback device must be either an official spotify client or a light weight alternative such as spotifyd",
         Style::default().fg(app.user_config.theme.hint)
         ),
     ),
-    Spans::from(
+    Line::from(
       Span::styled(
           "\nPress <Esc> to return",
           Style::default().fg(app.user_config.theme.inactive),
@@ -1118,7 +1118,7 @@ where
   f.render_widget(playing_paragraph, chunks[0]);
 }
 
-fn draw_home<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+fn draw_home(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -1179,7 +1179,7 @@ where
   f.render_widget(bottom_text, chunks[1]);
 }
 
-fn draw_artist_albums<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+fn draw_artist_albums(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -1203,8 +1203,8 @@ where
         let mut name = String::new();
         if let Some(context) = &app.current_playback_context {
           let track_id = match &context.item {
-            Some(PlayingItem::Track(track)) => track.id.to_owned(),
-            Some(PlayingItem::Episode(episode)) => Some(episode.id.to_owned()),
+            Some(PlayableItem::Track(track)) => track.id.to_owned(),
+            Some(PlayableItem::Episode(episode)) => Some(episode.id.to_owned()),
             _ => None,
           };
 
@@ -1283,7 +1283,7 @@ where
   };
 }
 
-pub fn draw_device_list<B>(f: &mut Frame<B>, app: &App)
+pub fn draw_device_list(f: &mut Frame<'_>, app: &App)
 where
   B: Backend,
 {
@@ -1293,12 +1293,12 @@ where
     .margin(5)
     .split(f.size());
 
-  let device_instructions: Vec<Spans> = vec![
+  let device_instructions: Vec<Line> = vec![
         "To play tracks, please select a device. ",
         "Use `j/k` or up/down arrow keys to move up and down and <Enter> to select. ",
         "Your choice here will be cached so you can jump straight back in when you next open `spotify-tui`. ",
         "You can change the playback device at any time by pressing `d`.",
-    ].into_iter().map(|instruction| Spans::from(Span::raw(instruction))).collect();
+    ].into_iter().map(|instruction| Line::from(Span::raw(instruction))).collect();
 
   let instructions = Paragraph::new(device_instructions)
     .style(Style::default().fg(app.user_config.theme.text))
@@ -1351,7 +1351,7 @@ where
   f.render_stateful_widget(list, chunks[1], &mut state);
 }
 
-pub fn draw_album_list<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_album_list(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -1415,7 +1415,7 @@ where
   };
 }
 
-pub fn draw_show_episodes<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_show_episodes(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -1526,7 +1526,7 @@ where
   };
 }
 
-pub fn draw_made_for_you<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_made_for_you(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -1567,7 +1567,7 @@ where
   }
 }
 
-pub fn draw_recently_played_table<B>(f: &mut Frame<B>, app: &App, layout_chunk: Rect)
+pub fn draw_recently_played_table(f: &mut Frame<'_>, app: &App, layout_chunk: Rect)
 where
   B: Backend,
 {
@@ -1635,7 +1635,7 @@ where
 }
 
 fn draw_selectable_list<B, S>(
-  f: &mut Frame<B>,
+  f: &mut Frame<'_>,
   app: &App,
   layout_chunk: Rect,
   title: &str,
@@ -1672,7 +1672,7 @@ fn draw_selectable_list<B, S>(
   f.render_stateful_widget(list, layout_chunk, &mut state);
 }
 
-fn draw_dialog<B>(f: &mut Frame<B>, app: &App)
+fn draw_dialog(f: &mut Frame<'_>, app: &App)
 where
   B: Backend,
 {
@@ -1704,12 +1704,12 @@ where
       // suggestion: possibly put this as part of
       // app.dialog, but would have to introduce lifetime
       let text = vec![
-        Spans::from(Span::raw("Are you sure you want to delete the playlist: ")),
-        Spans::from(Span::styled(
+        Line::from(Span::raw("Are you sure you want to delete the playlist: ")),
+        Line::from(Span::styled(
           playlist.as_str(),
           Style::default().add_modifier(Modifier::BOLD),
         )),
-        Spans::from(Span::raw("?")),
+        Line::from(Span::raw("?")),
       ];
 
       let text = Paragraph::new(text)
@@ -1749,8 +1749,8 @@ where
   }
 }
 
-fn draw_table<B>(
-  f: &mut Frame<B>,
+fn draw_table(
+  f: &mut Frame<'_>,
   app: &App,
   layout_chunk: Rect,
   table_layout: (&str, &TableHeader), // (title, header colums)
@@ -1765,10 +1765,10 @@ fn draw_table<B>(
 
   let track_playing_index = app.current_playback_context.to_owned().and_then(|ctx| {
     ctx.item.and_then(|item| match item {
-      PlayingItem::Track(track) => items
+      PlayableItem::Track(track) => items
         .iter()
         .position(|item| track.id.to_owned().map(|id| id == item.id).unwrap_or(false)),
-      PlayingItem::Episode(episode) => items.iter().position(|item| episode.id == item.id),
+      PlayableItem::Episode(episode) => items.iter().position(|item| episode.id == item.id),
     })
   });
 
@@ -1841,7 +1841,7 @@ fn draw_table<B>(
     .items
     .iter()
     .map(|h| Constraint::Length(h.width))
-    .collect::<Vec<tui::layout::Constraint>>();
+    .collect::<Vec<ratatui::layout::Constraint>>();
 
   let table = Table::new(rows)
     .header(

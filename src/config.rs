@@ -13,6 +13,18 @@ const CONFIG_DIR: &str = ".config";
 const APP_CONFIG_DIR: &str = "spotify-tui";
 const TOKEN_CACHE_FILE: &str = ".spotify_token_cache.json";
 
+/// Get the token cache path as a standalone function
+pub fn get_token_cache_path() -> PathBuf {
+  match dirs::home_dir() {
+    Some(home) => {
+      let path = Path::new(&home);
+      let app_config_dir = path.join(CONFIG_DIR).join(APP_CONFIG_DIR);
+      app_config_dir.join(TOKEN_CACHE_FILE)
+    }
+    None => PathBuf::from(TOKEN_CACHE_FILE),
+  }
+}
+
 #[derive(Default, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ClientConfig {
   pub client_id: String,

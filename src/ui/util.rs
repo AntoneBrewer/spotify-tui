@@ -1,7 +1,7 @@
 use super::super::app::{ActiveBlock, App, ArtistBlock, SearchResultBlock};
 use crate::user_config::Theme;
 use rspotify::model::artist::SimplifiedArtist;
-use tui::style::Style;
+use ratatui::style::Style;
 
 pub const BASIC_VIEW_HEIGHT: u16 = 6;
 pub const SMALL_TERMINAL_WIDTH: u16 = 150;

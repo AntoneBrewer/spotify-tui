@@ -4,7 +4,7 @@ use rspotify::{
     album::SimplifiedAlbum, artist::FullArtist, artist::SimplifiedArtist,
     playlist::SimplifiedPlaylist, show::FullEpisode, show::SimplifiedShow, track::FullTrack,
   },
-  senum::RepeatState,
+  model::RepeatState,
 };
 
 use crate::user_config::UserConfig;
