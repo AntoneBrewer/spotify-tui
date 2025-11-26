@@ -971,8 +971,8 @@ impl App {
       }
       ActiveBlock::ArtistBlock => {
         if let Some(artist) = &self.artist {
-          let selected_artis = &artist.related_artists[artist.selected_related_artist_index];
-          let artist_id = selected_artis.id.clone();
+          let selected_artist = &artist.related_artists[artist.selected_related_artist_index];
+          let artist_id = selected_artist.id.clone();
           self.dispatch(IoEvent::UserUnfollowArtists(vec![artist_id]));
         }
       }
@@ -993,8 +993,8 @@ impl App {
       }
       ActiveBlock::ArtistBlock => {
         if let Some(artist) = &self.artist {
-          let selected_artis = &artist.related_artists[artist.selected_related_artist_index];
-          let artist_id = selected_artis.id.clone();
+          let selected_artist = &artist.related_artists[artist.selected_related_artist_index];
+          let artist_id = selected_artist.id.clone();
           self.dispatch(IoEvent::UserFollowArtists(vec![artist_id]));
         }
       }

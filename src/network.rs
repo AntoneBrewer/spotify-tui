@@ -267,7 +267,7 @@ impl<'a> Network<'a> {
         self.get_album(album_id).await;
       }
       IoEvent::TransferPlaybackToDevice(device_id) => {
-        self.transfert_playback_to_device(device_id).await;
+        self.transfer_playback_to_device(device_id).await;
       }
       IoEvent::GetAlbumForTrack(track_id) => {
         self.get_album_for_track(track_id).await;
@@ -1443,7 +1443,7 @@ impl<'a> Network<'a> {
     }
   }
 
-  async fn transfert_playback_to_device(&mut self, device_id: String) {
+  async fn transfer_playback_to_device(&mut self, device_id: String) {
     match self.spotify.transfer_playback(&device_id, true).await {
       Ok(()) => {
         self.get_current_playback().await;
