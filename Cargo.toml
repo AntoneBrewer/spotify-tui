@@ -33,3 +33,6 @@ anyhow = "1.0.43"
 bench = false
 path = "src/main.rs"
 name = "spt"
+
+[patch.crates-io]
+rspotify = { path = "vendor/rspotify-0.10.0" }

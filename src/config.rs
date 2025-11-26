@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::{
   fs,
   io::{stdin, Write},
+  net::UdpSocket,
   path::{Path, PathBuf},
 };
 
@@ -37,8 +38,25 @@ impl ClientConfig {
     }
   }
 
+  /// Get the local IP address of this machine.
+  /// Falls back to 127.0.0.1 if unable to determine the local IP.
+  pub fn get_local_ip() -> String {
+    // Use UDP socket to determine local IP by attempting to "connect" to an external address.
+    // This doesn't actually send any data, but it allows the OS to select the appropriate
+    // network interface and IP address.
+    UdpSocket::bind("0.0.0.0:0")
+      .and_then(|socket| {
+        // Connect to Google's public DNS - this doesn't send any packets
+        socket.connect("8.8.8.8:80")?;
+        socket.local_addr()
+      })
+      .map(|addr| addr.ip().to_string())
+      .unwrap_or_else(|_| "127.0.0.1".to_string())
+  }
+
   pub fn get_redirect_uri(&self) -> String {
-    format!("http://localhost:{}/callback", self.get_port())
+    let ip = ClientConfig::get_local_ip();
+    format!("http://{}:{}/callback", ip, self.get_port())
   }
 
   pub fn get_port(&self) -> u16 {
@@ -110,13 +128,14 @@ impl ClientConfig {
 
       println!("\nHow to get setup:\n");
 
+      let local_ip = ClientConfig::get_local_ip();
       let instructions = [
         "Go to the Spotify dashboard - https://developer.spotify.com/dashboard/applications",
         "Click `Create a Client ID` and create an app",
         "Now click `Edit Settings`",
         &format!(
-          "Add `http://localhost:{}/callback` to the Redirect URIs",
-          DEFAULT_PORT
+          "Add `http://{}:{}/callback` to the Redirect URIs",
+          local_ip, DEFAULT_PORT
         ),
         "You are now ready to authenticate with Spotify!",
       ];
@@ -196,5 +215,75 @@ impl ClientConfig {
     } else {
       Ok(())
     }
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  #[test]
+  fn test_get_local_ip_returns_valid_ip() {
+    let ip = ClientConfig::get_local_ip();
+    // IP should be a valid format (contains dots for IPv4 or colons for IPv6)
+    assert!(
+      ip.contains('.') || ip.contains(':'),
+      "IP address should be valid: {}",
+      ip
+    );
+    // Should not be empty
+    assert!(!ip.is_empty());
+  }
+
+  #[test]
+  fn test_get_redirect_uri_uses_local_ip() {
+    let config = ClientConfig::new();
+    let redirect_uri = config.get_redirect_uri();
+    // Should contain "http://" prefix
+    assert!(redirect_uri.starts_with("http://"));
+    // Should contain "/callback" suffix
+    assert!(redirect_uri.contains("/callback"));
+    // Should contain the default port
+    assert!(redirect_uri.contains(":8888/"));
+    // Should NOT contain "localhost" since we're using IP
+    let local_ip = ClientConfig::get_local_ip();
+    assert!(
+      redirect_uri.contains(&local_ip),
+      "Redirect URI should contain local IP: {}",
+      redirect_uri
+    );
+  }
+
+  #[test]
+  fn test_get_redirect_uri_with_custom_port() {
+    let config = ClientConfig {
+      client_id: "".to_string(),
+      client_secret: "".to_string(),
+      device_id: None,
+      port: Some(9999),
+    };
+    let redirect_uri = config.get_redirect_uri();
+    assert!(
+      redirect_uri.contains(":9999/"),
+      "Redirect URI should contain custom port: {}",
+      redirect_uri
+    );
+  }
+
+  #[test]
+  fn test_get_port_default() {
+    let config = ClientConfig::new();
+    assert_eq!(config.get_port(), 8888);
+  }
+
+  #[test]
+  fn test_get_port_custom() {
+    let config = ClientConfig {
+      client_id: "".to_string(),
+      client_secret: "".to_string(),
+      device_id: None,
+      port: Some(3000),
+    };
+    assert_eq!(config.get_port(), 3000);
   }
 }
