@@ -1,5 +1,6 @@
 use clap::ArgMatches;
 use rspotify::{
+  prelude::*,
   model::{
     album::SimplifiedAlbum, artist::FullArtist, artist::SimplifiedArtist,
     playlist::SimplifiedPlaylist, show::FullEpisode, show::SimplifiedShow, track::FullTrack,

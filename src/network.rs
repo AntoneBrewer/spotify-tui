@@ -22,7 +22,6 @@ use rspotify::{
   },
   AuthCodeSpotify, Credentials, OAuth, Token,
 };
-use serde_json::{map::Map, Value};
 use std::{
   sync::Arc,
   time::{Duration, Instant},
@@ -763,7 +762,9 @@ impl<'a> Network<'a> {
       }
     });
 
-    let offset_obj = offset.map(|o| Offset::Position(chrono::Duration::try_milliseconds((o * 1000) as i64).unwrap_or_default()));
+    // For track position in a playlist/album, we use the Position offset
+    // which in rspotify is actually a Duration (representing position index as milliseconds)
+    let offset_obj = offset.map(|o| Offset::Position(chrono::Duration::try_milliseconds(o as i64).unwrap_or_default()));
 
     let device_id = self.client_config.device_id.as_deref();
 
@@ -1009,28 +1010,43 @@ impl<'a> Network<'a> {
     first_track: Box<Option<FullTrack>>,
     country: Option<Country>,
   ) {
-    let seed_artist_ids: Vec<ArtistId> = seed_artists
-      .unwrap_or_default()
+    let seed_artists_unwrapped = seed_artists.unwrap_or_default();
+    let seed_artist_ids: Vec<ArtistId> = seed_artists_unwrapped
       .iter()
       .filter_map(|id| ArtistId::from_id(id).ok())
       .collect();
     
-    let seed_track_ids: Vec<TrackId> = seed_tracks
-      .unwrap_or_default()
+    let seed_tracks_unwrapped = seed_tracks.unwrap_or_default();
+    let seed_track_ids: Vec<TrackId> = seed_tracks_unwrapped
       .iter()
       .filter_map(|id| TrackId::from_id(id).ok())
       .collect();
 
     let market = country.map(Market::Country);
-    let empty_payload: Map<String, Value> = Map::new();
+
+    // seed_artists and seed_tracks need to be passed as owned iterators
+    let seed_artists_opt: Option<Vec<ArtistId>> = if seed_artist_ids.is_empty() {
+      None
+    } else {
+      Some(seed_artist_ids)
+    };
+    
+    let seed_tracks_opt: Option<Vec<TrackId>> = if seed_track_ids.is_empty() {
+      None
+    } else {
+      Some(seed_track_ids)
+    };
+
+    // Empty attributes
+    let empty_attrs: Vec<rspotify::model::RecommendationsAttribute> = Vec::new();
 
     match self
       .spotify
       .recommendations(
-        empty_payload.clone(),
-        seed_artist_ids.iter().map(|a| a.as_ref()),
-        None::<std::iter::Empty<&str>>,
-        seed_track_ids.iter().map(|t| t.as_ref()),
+        empty_attrs,
+        seed_artists_opt,
+        None::<Vec<&str>>,
+        seed_tracks_opt,
         market,
         Some(self.large_search_limit),
       )

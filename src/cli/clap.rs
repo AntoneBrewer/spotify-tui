@@ -48,9 +48,9 @@ can be used together
       format_arg()
         .default_value("%f %s %t - %a")
         .default_value_ifs([
-          ("seek", None::<&str>, Some("%f %s %t - %a %r")),
-          ("volume", None::<&str>, Some("%v% %f %s %t - %a")),
-          ("transfer", None::<&str>, Some("%f %s %t - %a on %d")),
+          ("seek", clap::builder::ArgPredicate::IsPresent, Some("%f %s %t - %a %r")),
+          ("volume", clap::builder::ArgPredicate::IsPresent, Some("%v% %f %s %t - %a")),
+          ("transfer", clap::builder::ArgPredicate::IsPresent, Some("%f %s %t - %a on %d")),
         ]),
     )
     .arg(
@@ -296,9 +296,9 @@ be applied to every item found.",
     )
     .visible_alias("l")
     .arg(format_arg().default_value_ifs([
-      ("devices", None::<&str>, Some("%v% %d")),
-      ("liked", None::<&str>, Some("%t - %a (%u)")),
-      ("playlists", None::<&str>, Some("%p (%u)")),
+      ("devices", clap::builder::ArgPredicate::IsPresent, Some("%v% %d")),
+      ("liked", clap::builder::ArgPredicate::IsPresent, Some("%t - %a (%u)")),
+      ("playlists", clap::builder::ArgPredicate::IsPresent, Some("%p (%u)")),
     ]))
     .arg(
       Arg::new("devices")
@@ -347,11 +347,11 @@ specify it.",
     )
     .visible_alias("s")
     .arg(format_arg().default_value_ifs([
-      ("tracks", None::<&str>, Some("%t - %a (%u)")),
-      ("playlists", None::<&str>, Some("%p (%u)")),
-      ("artists", None::<&str>, Some("%a (%u)")),
-      ("albums", None::<&str>, Some("%b - %a (%u)")),
-      ("shows", None::<&str>, Some("%h - %a (%u)")),
+      ("tracks", clap::builder::ArgPredicate::IsPresent, Some("%t - %a (%u)")),
+      ("playlists", clap::builder::ArgPredicate::IsPresent, Some("%p (%u)")),
+      ("artists", clap::builder::ArgPredicate::IsPresent, Some("%a (%u)")),
+      ("albums", clap::builder::ArgPredicate::IsPresent, Some("%b - %a (%u)")),
+      ("shows", clap::builder::ArgPredicate::IsPresent, Some("%h - %a (%u)")),
     ]))
     .arg(
       Arg::new("search")

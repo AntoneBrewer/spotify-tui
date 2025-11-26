@@ -57,7 +57,7 @@ pub fn handler(key: Key, app: &mut App) {
       AlbumTableContext::Full => {
         if let Some(selected_album) = app.selected_album_full.clone() {
           app.dispatch(IoEvent::StartPlayback(
-            Some(selected_album.album.uri),
+            Some(selected_album.album.id.uri()),
             None,
             Some(app.saved_album_tracks_index),
           ));
@@ -65,8 +65,9 @@ pub fn handler(key: Key, app: &mut App) {
       }
       AlbumTableContext::Simplified => {
         if let Some(selected_album_simplified) = &app.selected_album_simplified.clone() {
+          let album_uri = selected_album_simplified.album.id.as_ref().map(|id| id.uri());
           app.dispatch(IoEvent::StartPlayback(
-            selected_album_simplified.album.uri.clone(),
+            album_uri,
             None,
             Some(selected_album_simplified.selected_index),
           ));
