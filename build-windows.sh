@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Build script for compiling spotify-tui to Windows executable
 # This script enables cross-compilation from Linux/macOS to Windows
@@ -19,7 +19,7 @@ if ! rustup target list --installed | grep -q "$TARGET"; then
 fi
 
 # Install cross-compilation dependencies for Windows if needed
-if [[ "$TARGET" == *"gnu"* ]] && [[ "$OSTYPE" == "linux-gnu"* ]]; then
+if [[ "$TARGET" == *"gnu"* ]]; then
     if ! command -v x86_64-w64-mingw32-gcc &> /dev/null; then
         echo "Warning: mingw-w64 not found. Installing it may be needed:"
         echo "  Ubuntu/Debian: sudo apt-get install mingw-w64"

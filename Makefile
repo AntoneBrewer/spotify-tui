@@ -27,7 +27,10 @@ build-release:
 build-windows:
 	@echo "Building Windows executable..."
 	@echo "Note: This requires the Windows toolchain. See BUILD_WINDOWS.md for details."
-	@rustup target add x86_64-pc-windows-gnu 2>/dev/null || true
+	@if ! rustup target list --installed | grep -q "x86_64-pc-windows-gnu"; then \
+		echo "Installing x86_64-pc-windows-gnu target..."; \
+		rustup target add x86_64-pc-windows-gnu; \
+	fi
 	cargo build --release --target x86_64-pc-windows-gnu
 	@echo ""
 	@echo "✓ Windows executable built at: target/x86_64-pc-windows-gnu/release/spt.exe"
