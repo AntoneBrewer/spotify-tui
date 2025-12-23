@@ -318,6 +318,15 @@ After that there is not much to it.
 1. Clone or fork this repo and `cd` to it
 1. And then `cargo run`
 
+### Building for Windows
+
+To compile the application as a Windows executable (`.exe`), see the [Windows Build Guide](BUILD_WINDOWS.md) which includes:
+
+- Quick start using `make build-windows` or the build script
+- Cross-compilation instructions for building on Linux/macOS
+- Troubleshooting common build issues
+- Manual build steps
+
 ### Windows Subsystem for Linux
 
 You might get a linking error. If so, you'll probably need to install additional dependencies required by the clipboard package
