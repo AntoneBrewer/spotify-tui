@@ -25,8 +25,8 @@ unicode-width = "0.1.8"
 backtrace = "0.3.57"
 arboard = "1.2.0"
 crossterm = "0.20"
-tokio = { version = "1.38", features = ["full"] }
-rand = "0.8.4"
+tokio = { version = "1.50", features = ["full"] }
+rand = "0.9.3"
 anyhow = "1.0.43"
 
 [[bin]]
